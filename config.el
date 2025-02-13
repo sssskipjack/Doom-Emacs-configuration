@@ -9,6 +9,9 @@
 ;; (setq user-full-name "John Doe"
 ;;       user-mail-address "john@doe.com")
 
+(setq user-full-name "Jack Zheng"
+      user-mail-address "jack.zheng.nz@gmail.com")
+
 ;; Doom exposes five (optional) variables for controlling fonts in Doom:
 ;;
 ;; - `doom-font' -- the primary font to use
@@ -29,9 +32,9 @@
 ;; refresh your font settings. If Emacs still can't find your font, it likely
 ;; wasn't installed correctly. Font issues are rarely Doom issues!
 
-(setq doom-font (font-spec :family "Roboto Mono" :size 14)) ;; Set to Roboto Mono
-(setq doom-variable-pitch-font (font-spec :family "Roboto Mono" :size 16)) ;; Optional UI font
-(setq doom-big-font (font-spec :family "Roboto Mono" :size 20)) ;; Bigger font for zoom mode
+;; (setq doom-font (font-spec :family "Roboto Mono" :size 14)) ;; Set to Roboto Mono
+;; (setq doom-variable-pitch-font (font-spec :family "Roboto Mono" :size 16)) ;; Optional UI font
+;; (setq doom-big-font (font-spec :family "Roboto Mono" :size 20)) ;; Bigger font for zoom mode
 
 ;; There are two ways to load a theme. Both assume the theme is installed and
 ;; available. You can either set `doom-theme' or manually load a theme with the
@@ -84,3 +87,13 @@
 ;;
 ;; You can also try 'gd' (or 'C-c c d') to jump to their definition and see how
 ;; they are implemented.
+
+;; TEMPLATES
+;; Here i'm just learning how to use templates, these are all my own
+(setq org-capture-templates
+      '(
+        ("n" "Note"
+         entry (file+headline "~/org/notes.org" "Random Notes")
+         "** %?"
+         :empty-lines 0)
+        ))
