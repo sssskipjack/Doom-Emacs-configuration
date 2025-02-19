@@ -61,6 +61,10 @@
       org-cite-follow-processor 'citar
       org-cite-activate-processor 'citar)
 
+(setq org-time-stamp-formats '("<%d/%m/%Y>" . "<%d/%m/%Y %H:%M>"))
+
+
+
 ;; Keybindings
 (map! :leader
       (:prefix "o"
@@ -74,11 +78,12 @@
         :desc "Insert link to node" "i" #'org-roam-node-insert
         :desc "Capture note" "c" #'org-roam-capture
         :desc "Toggle backlinks buffer" "b" #'org-roam-buffer-toggle
-        :desc "Today's daily note" "d" #'org-roam-dailies-goto-today
-        :desc "Capture daily note" "D" #'org-roam-dailies-capture-today))
+        :desc "Open today's daily note" "d" #'org-roam-dailies-goto-today
+        :desc "Capture today's daily note" "D" #'org-roam-dailies-capture-today))
 
-      (:prefix ("n c" . "Citations")
-       :desc "Insert Citation" "c" #'citar-insert-citation))
+      (:prefix "i"
+       :desc "Insert Citation" "c" #'citar-insert-citation
+       :desc "Insert Date" "d" #'org-time-stamp))
 
 ;; Show Hidden Files in Neotree
 (setq-default neo-show-hidden-files t)
