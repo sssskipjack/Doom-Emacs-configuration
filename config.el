@@ -45,12 +45,45 @@
 ;; numbers are disabled. For relative line numbers, set this to `relative'.
 (setq display-line-numbers-type t)
 
-;; If you use `org' and don't want your org files in the default location below,
-;; change `org-directory'. It must be set before org loads!
-(setq org-directory "~/org/")
-(setq org-agenda-files (list "~/org/tasks.org"))
+;; org-roam setup
+
+(setq org-directory "~/org") ;; Your main org directory
+
+(use-package! org-roam
+  :init
+  (setq org-roam-directory (file-truename "~/org/roam"))
+  (setq org-roam-db-location (concat org-directory "/org-roam.db"))
+  (setq org-roam-completion-everywhere t)
+  :config
+  (org-roam-db-autosync-mode))
+
+(use-package! org-roam-ui
+  :after org-roam
+  :config
+  (setq org-roam-ui-sync-theme t
+        org-roam-ui-follow t
+        org-roam-ui-update-on-save t
+        org-roam-ui-open-on-start t))
+
+;; key-bindings
+(map! :leader
+      :prefix "n r"
+      :desc "Find or create node" "f" #'org-roam-node-find
+      :desc "Insert link to node" "i" #'org-roam-node-insert
+      :desc "Capture a note" "c" #'org-roam-capture
+      :desc "Open Org-Roam UI" "u" #'org-roam-ui-mode
+      :desc "Toggle backlinks buffer" "b" #'org-roam-buffer-toggle
+      :desc "Open today's daily note" "d o" #'org-roam-dailies-goto-today
+      :desc "Capture today's daily note" "d t" #'org-roam-dailies-capture-today
+)
+
+
+
+
 ;; Show hidden files for neotree
+
 (setq-default neo-show-hidden-files t)
+
 
 
 ;; Whenever you reconfigure a package, make sure to wrap your config in an
@@ -87,13 +120,3 @@
 ;;
 ;; You can also try 'gd' (or 'C-c c d') to jump to their definition and see how
 ;; they are implemented.
-
-;; TEMPLATES
-;; Here i'm just learning how to use templates, these are all my own
-(setq org-capture-templates
-      '(
-        ("n" "Note"
-         entry (file+headline "~/org/notes.org" "Random Notes")
-         "** %?"
-         :empty-lines 0)
-        ))
