@@ -1,62 +1,41 @@
 ;;; $DOOMDIR/config.el -*- lexical-binding: t; -*-
 
-;; Place your private configuration here! Remember, you do not need to run 'doom
-;; sync' after modifying this file!
-
-
-;; Some functionality uses this to identify you, e.g. GPG configuration, email
-;; clients, file templates and snippets. It is optional.
-;; (setq user-full-name "John Doe"
-;;       user-mail-address "john@doe.com")
-
+;; User Info
 (setq user-full-name "Jack Zheng"
       user-mail-address "jack.zheng.nz@gmail.com")
 
-;; Doom exposes five (optional) variables for controlling fonts in Doom:
-;;
-;; - `doom-font' -- the primary font to use
-;; - `doom-variable-pitch-font' -- a non-monospace font (where applicable)
-;; - `doom-big-font' -- used for `doom-big-font-mode'; use this for
-;;   presentations or streaming.
-;; - `doom-symbol-font' -- for symbols
-;; - `doom-serif-font' -- for the `fixed-pitch-serif' face
-;;
-;; See 'C-h v doom-font' for documentation and more examples of what they
-;; accept. For example:
-;;
-;;(setq doom-font (font-spec :family "Fira Code" :size 12 :weight 'semi-light)
-;;      doom-variable-pitch-font (font-spec :family "Fira Sans" :size 13))
-;;
-;; If you or Emacs can't find your font, use 'M-x describe-font' to look them
-;; up, `M-x eval-region' to execute elisp code, and 'M-x doom/reload-font' to
-;; refresh your font settings. If Emacs still can't find your font, it likely
-;; wasn't installed correctly. Font issues are rarely Doom issues!
+;; UI Settings
+(setq doom-theme 'doom-one
+      display-line-numbers-type t)
 
-;; (setq doom-font (font-spec :family "Roboto Mono" :size 14)) ;; Set to Roboto Mono
-;; (setq doom-variable-pitch-font (font-spec :family "Roboto Mono" :size 16)) ;; Optional UI font
-;; (setq doom-big-font (font-spec :family "Roboto Mono" :size 20)) ;; Bigger font for zoom mode
+;; Org Directory
+(setq org-directory "~/org"
+      org-roam-directory (expand-file-name "roam" org-directory)
+      org-roam-db-location (expand-file-name "org-roam.db" org-roam-directory))
 
-;; There are two ways to load a theme. Both assume the theme is installed and
-;; available. You can either set `doom-theme' or manually load a theme with the
-;; `load-theme' function. This is the default:
-(setq doom-theme 'doom-one)
-
-;; This determines the style of line numbers in effect. If set to `nil', line
-;; numbers are disabled. For relative line numbers, set this to `relative'.
-(setq display-line-numbers-type t)
-
-;; org-roam setup
-
-(setq org-directory "~/org") ;; Your main org directory
-
+;; Org-Roam Configuration
 (use-package! org-roam
   :init
-  (setq org-roam-directory (file-truename "~/org/roam"))
-  (setq org-roam-db-location (concat org-directory "/org-roam.db"))
-  (setq org-roam-completion-everywhere t)
+  (setq org-roam-completion-everywhere t
+        org-roam-capture-templates
+        '(("l" "Literature Review" plain
+           "* Title: ${title}\n\n* Authors: \n\n* Year: \n\n* Summary:\n\n* Research Question:\n\n* Methods:\n\n* Key Findings:\n\n* Limitations:\n\n* How This Relates to My Project:\n\n* Citation: cite:@"
+           :target (file+head "literature/${slug}.org" "#+title: ${title}\n#+filetags: :literature:\n")
+           :unnarrowed t)
+
+          ("f" "Fleeting Note" plain
+           "* ${title}\n\n%?"
+           :target (file+head "fleeting/${slug}.org" "#+title: ${title}\n#+filetags: :fleeting:\n")
+           :unnarrowed t)
+
+          ("p" "Permanent Note" plain
+           "* ${title}\n\n%?"
+           :target (file+head "permanent/${slug}.org" "#+title: ${title}\n#+filetags: :permanent:\n")
+           :unnarrowed t)))
   :config
   (org-roam-db-autosync-mode))
 
+;; Org-Roam-UI
 (use-package! org-roam-ui
   :after org-roam
   :config
@@ -65,58 +44,41 @@
         org-roam-ui-update-on-save t
         org-roam-ui-open-on-start t))
 
-;; key-bindings
+;; Citar (Bibliography Management)
+(use-package! citar
+  :after org
+  :custom
+  (citar-bibliography `(,(expand-file-name "bibtex/Honours.bib" org-directory)))
+  (citar-notes-paths `(,(expand-file-name "roam/honours" org-roam-directory)))
+  (citar-library-paths `(,(expand-file-name "bibtex/pdfs/" org-directory)))
+  :bind
+  (:map doom-leader-map
+        ("n c" . citar-insert-citation)))
+
+;; Org-Cite Configuration
+(setq org-cite-global-bibliography `(,(expand-file-name "bibtex/Honours.bib" org-directory))
+      org-cite-insert-processor 'citar
+      org-cite-follow-processor 'citar
+      org-cite-activate-processor 'citar)
+
+;; Keybindings
 (map! :leader
-      :prefix "n r"
-      :desc "Find or create node" "f" #'org-roam-node-find
-      :desc "Insert link to node" "i" #'org-roam-node-insert
-      :desc "Capture a note" "c" #'org-roam-capture
-      :desc "Open Org-Roam UI" "u" #'org-roam-ui-mode
-      :desc "Toggle backlinks buffer" "b" #'org-roam-buffer-toggle
-      :desc "Open today's daily note" "d o" #'org-roam-dailies-goto-today
-      :desc "Capture today's daily note" "d t" #'org-roam-dailies-capture-today
-)
+      (:prefix "o"
+       :desc "Toggle Neotree" "p" #'neotree-toggle
+       :desc "Org-Roam Capture" "r" #'org-roam-capture
+       :desc "Open Org-Roam UI" "u" #'org-roam-ui-open)
 
+      (:prefix "n"
+       (:prefix ("r" . "Org-Roam")
+        :desc "Find/create node" "f" #'org-roam-node-find
+        :desc "Insert link to node" "i" #'org-roam-node-insert
+        :desc "Capture note" "c" #'org-roam-capture
+        :desc "Toggle backlinks buffer" "b" #'org-roam-buffer-toggle
+        :desc "Today's daily note" "d" #'org-roam-dailies-goto-today
+        :desc "Capture daily note" "D" #'org-roam-dailies-capture-today))
 
+      (:prefix ("n c" . "Citations")
+       :desc "Insert Citation" "c" #'citar-insert-citation))
 
-
-;; Show hidden files for neotree
-
+;; Show Hidden Files in Neotree
 (setq-default neo-show-hidden-files t)
-
-
-
-;; Whenever you reconfigure a package, make sure to wrap your config in an
-;; `after!' block, otherwise Doom's defaults may override your settings. E.g.
-;;
-;;   (after! PACKAGE
-;;     (setq x y))
-;;
-;; The exceptions to this rule:
-;;
-;;   - Setting file/directory variables (like `org-directory')
-;;   - Setting variables which explicitly tell you to set them before their
-;;     package is loaded (see 'C-h v VARIABLE' to look up their documentation).
-;;   - Setting doom variables (which start with 'doom-' or '+').
-;;
-;; Here are some additional functions/macros that will help you configure Doom.
-;;
-;; - `load!' for loading external *.el files relative to this one
-;; - `use-package!' for configuring packages
-;; - `after!' for running code after a package has loaded
-;; - `add-load-path!' for adding directories to the `load-path', relative to
-;;   this file. Emacs searches the `load-path' when you load packages with
-;;   `require' or `use-package'.
-;; - `map!' for binding new keys
-
-(map! :leader
-      :desc "Toggle neotree" "o p" #'neotree-toggle)
-
-;; To get information about any of these functions/macros, move the cursor over
-;; the highlighted symbol at press 'K' (non-evil users must press 'C-c c k').
-;; This will open documentation for it, including demos of how they are used.
-;; Alternatively, use `C-h o' to look up a symbol (functions, variables, faces,
-;; etc).
-;;
-;; You can also try 'gd' (or 'C-c c d') to jump to their definition and see how
-;; they are implemented.

@@ -8,6 +8,7 @@
 (package! neotree)
 (package! org-roam)
 (package! org-roam-ui)
+(package! citar)
 ;; (package! org-modern)
 
 ;; To install SOME-PACKAGE from MELPA, ELPA or emacsmirror:
