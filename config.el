@@ -13,6 +13,10 @@
       org-roam-directory (expand-file-name "roam" org-directory)
       org-roam-db-location (expand-file-name "org-roam.db" org-roam-directory))
 
+;; Org agenda
+(setq org-agenda-files (list "~/org/todo/"))
+
+
 ;; Org-Roam Configuration
 (use-package! org-roam
   :init
