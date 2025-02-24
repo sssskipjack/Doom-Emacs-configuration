@@ -23,7 +23,7 @@
   (setq org-roam-completion-everywhere t
         org-roam-capture-templates
         '(("l" "Literature Review" plain
-           "* Title: ${title}\n\n* Authors: \n\n* Year: \n\n* Summary:\n\n* Research Question:\n\n* Methods:\n\n* Key Findings:\n\n* Limitations:\n\n* How This Relates to My Project:\n\n* Citation: cite:@"
+           "* Title: ${title}\n\n* Problem:\n\n* Solution:\n\n* Methods:\n\n* Dataset:\n\n* Key Findings:\n\n* Limitations:\n\n* How This Relates to My Project:\n\n* Citation: cite:@"
            :target (file+head "literature/${slug}.org" "#+title: ${title}\n#+filetags: :literature:\n")
            :unnarrowed t)
 
