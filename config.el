@@ -16,28 +16,113 @@
 ;; Org agenda
 (setq org-agenda-files (list "~/org/todo/"))
 
-
 ;; Org-Roam Configuration
 (use-package! org-roam
   :init
   (setq org-roam-completion-everywhere t
         org-roam-capture-templates
-        '(("l" "Literature Review" plain
-           "* Title: ${title}\n\n* Problem:\n\n* Solution:\n\n* Methods:\n\n* Dataset:\n\n* Key Findings:\n\n* Limitations:\n\n* How This Relates to My Project:\n\n* Citation: cite:@"
-           :target (file+head "literature/${slug}.org" "#+title: ${title}\n#+filetags: :literature:\n")
+        '(
+
+          ;; Template for Review Papers
+          ("1" "Literature Review (Review Paper)" plain
+           "#+date: %t
+* Research Focus
+** Title:
+** Authors/Year:
+
+* Scope & Objectives
+[Outline the scope and aims of the review]
+
+* Key Themes
+[What are the main themes and contributions?]
+
+* Critical Analysis
+[Your evaluation and insights]
+
+* Identified Gaps
+[Overarching research gaps identified across the literature]
+
+* Future Directions
+[Suggestions for further research]
+
+* References
+[Insert citation metadata, e.g., Author, Year, etc.]
+"
+           :target (file+head "literature/${slug}.org" "#+title: ${title}\n#+filetags: :literature:1:\n")
            :unnarrowed t)
 
+          ;; Template for Technical Papers
+          ("2" "Literature Review (Technical Paper)" plain
+           "#+date: %t
+* Research Focus
+** Title:
+** Authors/Year:
+
+* Context & Problem Statement
+[Describe the real-world problem]
+
+* Research Gaps & Questions
+[Identify gaps and key questions]
+
+* Methods & Data
+** Data:
+** Techniques:
+
+* Key Findings
+[Summarize key results or metrics]
+
+* Insights & Implications
+[Preliminary findings and policy implications]
+
+* Miscellaneous
+[Notes from meetings, e.g., Hao Wang]
+
+* References
+[Insert citation metadata, e.g., Author, Year, etc.]
+"
+           :target (file+head "literature/${slug}.org" "#+title: ${title}\n#+filetags: :literature:2:\n")
+           :unnarrowed t)
+
+          ;; Template for Tool Papers
+          ("3" "Literature Review (Tool Paper)" plain
+           "#+date: %t
+* Tool Overview
+** Name:
+** Version/Release:
+
+* Purpose & Application
+[Describe the key purpose and how the tool is applied in practice]
+
+* Features & Capabilities
+[Detail the key features]
+
+* Evaluation
+[Assess the tool’s strengths, limitations, and note any integration/compatibility challenges]
+
+* Integration in Research
+[How the tool fits into broader research contexts]
+
+* References
+[Insert citation metadata, e.g., Author, Year, etc.]
+"
+           :target (file+head "literature/${slug}.org" "#+title: ${title}\n#+filetags: :literature:3:\n")
+           :unnarrowed t)
+
+          ;; Fleeting Note Template
           ("f" "Fleeting Note" plain
            "* ${title}\n\n%?"
            :target (file+head "fleeting/${slug}.org" "#+title: ${title}\n#+filetags: :fleeting:\n")
            :unnarrowed t)
 
+          ;; Permanent Note Template
           ("p" "Permanent Note" plain
            "* ${title}\n\n%?"
            :target (file+head "permanent/${slug}.org" "#+title: ${title}\n#+filetags: :permanent:\n")
-           :unnarrowed t)))
+           :unnarrowed t)
+          ))
   :config
   (org-roam-db-autosync-mode))
+
 
 ;; Org-Roam-UI
 (use-package! org-roam-ui
@@ -67,7 +152,11 @@
 
 (setq org-time-stamp-formats '("<%d/%m/%Y>" . "<%d/%m/%Y %H:%M>"))
 
-
+;; anki
+(use-package! anki-editor
+  :after org
+  :config
+  (setq anki-editor-create-decks t))
 
 ;; Keybindings
 (map! :leader
