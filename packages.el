@@ -10,7 +10,8 @@
 (package! org-roam-ui)
 (package! citar)
 (package! anki-editor)
-
+(package! pdf-tools)
+(package! auctex)
 
 
 ;; To install SOME-PACKAGE from MELPA, ELPA or emacsmirror:

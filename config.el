@@ -1,113 +1,36 @@
-;;; $DOOMDIR/config.el -*- lexical-binding: t; -*-
-
+;; -----------------------
 ;; User Info
+;; -----------------------
 (setq user-full-name "Jack Zheng"
       user-mail-address "jack.zheng.nz@gmail.com")
 
+;; -----------------------
 ;; UI Settings
+;; -----------------------
 (setq doom-theme 'doom-one
       display-line-numbers-type t)
 
+;; -----------------------
 ;; Org Directory
+;; -----------------------
 (setq org-directory "~/org"
       org-roam-directory (expand-file-name "roam" org-directory)
       org-roam-db-location (expand-file-name "org-roam.db" org-roam-directory))
 
-;; Org agenda
+;; -----------------------
+;; Org Agenda
+;; -----------------------
 (setq org-agenda-files (list "~/org/todo/"))
 
+;; -----------------------
 ;; Org-Roam Configuration
+;; -----------------------
 (use-package! org-roam
   :init
   (setq org-roam-completion-everywhere t
+        ;; All literature-review templates have been removed below:
         org-roam-capture-templates
         '(
-
-          ;; Template for Review Papers
-          ("1" "Literature Review (Review Paper)" plain
-           "#+date: %t
-* Research Focus
-** Title:
-** Authors/Year:
-
-* Scope & Objectives
-[Outline the scope and aims of the review]
-
-* Key Themes
-[What are the main themes and contributions?]
-
-* Critical Analysis
-[Your evaluation and insights]
-
-* Identified Gaps
-[Overarching research gaps identified across the literature]
-
-* Future Directions
-[Suggestions for further research]
-
-* References
-[Insert citation metadata, e.g., Author, Year, etc.]
-"
-           :target (file+head "literature/${slug}.org" "#+title: ${title}\n#+filetags: :literature:1:\n")
-           :unnarrowed t)
-
-          ;; Template for Technical Papers
-          ("2" "Literature Review (Technical Paper)" plain
-           "#+date: %t
-* Research Focus
-** Title:
-** Authors/Year:
-
-* Context & Problem Statement
-[Describe the real-world problem]
-
-* Research Gaps & Questions
-[Identify gaps and key questions]
-
-* Methods & Data
-** Data:
-** Techniques:
-
-* Key Findings
-[Summarize key results or metrics]
-
-* Insights & Implications
-[Preliminary findings and policy implications]
-
-* Miscellaneous
-[Notes from meetings, e.g., Hao Wang]
-
-* References
-[Insert citation metadata, e.g., Author, Year, etc.]
-"
-           :target (file+head "literature/${slug}.org" "#+title: ${title}\n#+filetags: :literature:2:\n")
-           :unnarrowed t)
-
-          ;; Template for Tool Papers
-          ("3" "Literature Review (Tool Paper)" plain
-           "#+date: %t
-* Tool Overview
-** Name:
-** Version/Release:
-
-* Purpose & Application
-[Describe the key purpose and how the tool is applied in practice]
-
-* Features & Capabilities
-[Detail the key features]
-
-* Evaluation
-[Assess the tool’s strengths, limitations, and note any integration/compatibility challenges]
-
-* Integration in Research
-[How the tool fits into broader research contexts]
-
-* References
-[Insert citation metadata, e.g., Author, Year, etc.]
-"
-           :target (file+head "literature/${slug}.org" "#+title: ${title}\n#+filetags: :literature:3:\n")
-           :unnarrowed t)
-
           ;; Fleeting Note Template
           ("f" "Fleeting Note" plain
            "* ${title}\n\n%?"
@@ -123,8 +46,9 @@
   :config
   (org-roam-db-autosync-mode))
 
-
+;; -----------------------
 ;; Org-Roam-UI
+;; -----------------------
 (use-package! org-roam-ui
   :after org-roam
   :config
@@ -133,32 +57,32 @@
         org-roam-ui-update-on-save t
         org-roam-ui-open-on-start t))
 
+;; -----------------------
 ;; Citar (Bibliography Management)
+;; -----------------------
 (use-package! citar
   :after org
   :custom
-  (citar-bibliography `(,(expand-file-name "bibtex/Honours.bib" org-directory)))
-  (citar-notes-paths `(,(expand-file-name "roam/honours" org-roam-directory)))
-  (citar-library-paths `(,(expand-file-name "bibtex/pdfs/" org-directory)))
+  (citar-bibliography (,(expand-file-name "bibtex/Honours.bib" org-directory)))
+  (citar-notes-paths (,(expand-file-name "roam/honours" org-roam-directory)))
+  (citar-library-paths (,(expand-file-name "bibtex/pdfs/" org-directory)))
   :bind
   (:map doom-leader-map
         ("n c" . citar-insert-citation)))
 
+;; -----------------------
 ;; Org-Cite Configuration
-(setq org-cite-global-bibliography `(,(expand-file-name "bibtex/Honours.bib" org-directory))
-      org-cite-insert-processor 'citar
-      org-cite-follow-processor 'citar
-      org-cite-activate-processor 'citar)
+;; -----------------------
+(setq org-cite-global-bibliography (list (expand-file-name "bibtex/Honours.bib" org-directory)))
 
+;; -----------------------
+;; Date/Time Formatting
+;; -----------------------
 (setq org-time-stamp-formats '("<%d/%m/%Y>" . "<%d/%m/%Y %H:%M>"))
 
-;; anki
-(use-package! anki-editor
-  :after org
-  :config
-  (setq anki-editor-create-decks t))
-
+;; -----------------------
 ;; Keybindings
+;; -----------------------
 (map! :leader
       (:prefix "o"
        :desc "Toggle Neotree" "p" #'neotree-toggle
@@ -178,5 +102,38 @@
        :desc "Insert Citation" "c" #'citar-insert-citation
        :desc "Insert Date" "d" #'org-time-stamp))
 
-;; Show Hidden Files in Neotree
+;; -----------------------
+;; Neotree: Show Hidden Files
+;; -----------------------
 (setq-default neo-show-hidden-files t)
+;; -----------------------
+;; AUCTeX Setup for LaTeX Editing
+;; -----------------------
+(use-package! tex
+  :defer t
+  :hook ((LaTeX-mode . TeX-PDF-mode)      ;; Enable PDF mode for LaTeX
+         (LaTeX-mode . TeX-source-correlate-mode) ;; SyncTeX support
+         (LaTeX-mode . flyspell-mode)     ;; Enable spell check
+         (LaTeX-mode . reftex-mode))      ;; Enable RefTeX for citations
+  :config
+  (setq TeX-auto-save t
+        TeX-parse-self t
+        TeX-save-query nil
+        TeX-source-correlate-start-server t ;; For PDF syncing
+        TeX-engine 'pdflatex))
+
+;; -----------------------
+;; Set Default LaTeX Compiler
+;; -----------------------
+(setq TeX-command-default "LatexMk")
+(setq TeX-engine 'pdflatex)  ;; Options: pdflatex, xetex, lualatex
+
+;; -----------------------
+;; Org-Mode LaTeX Export Configuration
+;; -----------------------
+(setq org-latex-compiler "pdflatex")
+
+;; -----------------------
+;; Auto Refresh PDF on Compilation
+;; -----------------------
+(add-hook 'TeX-after-compilation-finished-functions #'TeX-revert-document-buffer)
